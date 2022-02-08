@@ -1,15 +1,15 @@
 {
-  "name": "tic-tac-toe",
+  "name": "herchel-tic-tac-toe",
   "version": "1.0.0",
-  "description": "A web based tic-tac-toe game useing firebase as database.",
+  "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "HarshalRathore",
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^9.6.5"
+    "express": "^4.17.2",
+    "firebase-admin": "^10.0.2"
   }
 }
