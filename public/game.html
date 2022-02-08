@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="tic.css" />
+
+    <!-- update the version number as needed -->
+    <title>Tic-Tac-Toe Game</title>
+</head>
+
+<body>
+    <div id="main">
+        <h1>TIC TAC TOE</h1>
+        <h3>
+            The room ID is Copied in clipboard send it to your friend to join game.
+        </h3>
+        <h4 id="h4"></h4>
+        <!-- Game Instructions -->
+        <p id="ins">
+            Game starts by just Tap on box<br /><br />First Player starts as
+            <b>Player X</b><br />And<br />Second Player as <b>Player 0</b>
+        </p>
+
+        <button class="btn" id="btn"></button>
+
+        <br /><br />
+        <!-- 3*3 grid of Boxes -->
+        <input type="text" id="b-0-0" onclick="updateTable(0, 0)" readonly />
+
+        <input type="text" id="b-0-1" onclick="updateTable(0, 1)" readonly />
+
+        <input type="text" id="b-0-2" onclick="updateTable(0, 2)" readonly />
+        <br /><br />
+
+        <input type="text" id="b-1-0" onclick="updateTable(1, 0)" readonly />
+
+        <input type="text" id="b-1-1" onclick="updateTable(1, 1)" readonly />
+
+        <input type="text" id="b-1-2" onclick="updateTable(1, 2)" readonly />
+        <br /><br />
+
+        <input type="text" id="b-2-0" onclick="updateTable(2, 0)" readonly />
+
+        <input type="text" id="b-2-1" onclick="updateTable(2, 1)" readonly />
+
+        <input type="text" id="b-2-2" onclick="updateTable(2, 2)" readonly />
+
+        <!-- Grid end here -->
+        <br /><br /><br />
+
+        <!-- Button to reset game -->
+        <button onclick="resetBoard()"> RESET </button>
+
+        <br /><br />
+        <!-- Space to show player turn -->
+        <p id="print"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            set,
+            onValue,
+        } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6NCfmXlx6cv1vZ6Srxu8aDpwv2ZNKCOQ",
+            authDomain: "tic-tac-toe-9fdee.firebaseapp.com",
+            databaseURL:
+                "https://tic-tac-toe-9fdee-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "tic-tac-toe-9fdee",
+            storageBucket: "tic-tac-toe-9fdee.appspot.com",
+            messagingSenderId: "423286742721",
+            appId: "1:423286742721:web:129585cf462c5dd9ab7e40",
+            measurementId: "G-T7EJVZXZKH",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase();
+
+        var chance = localStorage.getItem("chance");
+        var user_name = localStorage.getItem("name");
+        var roomId = localStorage.getItem("roomId");
+
+        var boardRef = ref(database, "rooms/" + roomId + "/board");
+        onValue(boardRef, (snapshot) => {
+            const data = snapshot.val();
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board[0].length; j++) {
+                    if (data[i][j]) {
+                        document.getElementById(`b-${i}-${j}`).value = data[i][j];
+                    }
+                }
+            }
+        });
+
+    </script>
+
+    <script>
+
+        var board = JSON.parse(localStorage.getItem("board"));
+        console.log(board);
+
+        var chance = localStorage.getItem("chance");
+        var user_name = localStorage.getItem("name");
+        var roomId = localStorage.getItem("roomId");
+
+        async function updateTable(i, j) {
+            const move = await fetch("/know-move", {
+                method: "POST",
+
+                headers: { "Content-type": "application/json; charset=UTF-8" },
+
+                body: JSON.stringify({
+                    roomId: roomId,
+                }),
+            });
+            const moveJson = await move.json();
+
+            if (moveJson.move == user_name) {
+                var mark = localStorage.getItem("mark");
+                board[i][j] = mark;
+                const response = await fetch("/update-board", {
+                    method: "POST",
+
+                    headers: { "Content-type": "application/json; charset=UTF-8" },
+
+                    body: JSON.stringify({
+                        name: name,
+                        roomId: roomId,
+                        board: board,
+                    }),
+                }).then(() => {
+                    console.log("board updated");
+                });
+            }
+        }
+
+        async function resetBoard() {
+            const response = await fetch("/reset-board", {
+                method: "POST",
+
+                headers: { "Content-type": "application/json; charset=UTF-8" },
+
+                body: JSON.stringify({
+                    roomId: roomId,
+                })
+                
+            }).then(() => {
+                console.log("board reset");
+            });
+        }
+    </script>
+</body>
+
+</html>
