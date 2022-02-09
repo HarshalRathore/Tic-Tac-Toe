@@ -6,110 +6,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Welcome to Firebase Hosting</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.6.6/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.6.6/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/9.6.6/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
     <style media="screen">
-        body {
-            background: #ECEFF1;
-            color: rgba(0, 0, 0, 0.87);
-            font-family: Roboto, Helvetica, Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
         }
 
-        #message {
-            background: white;
-            max-width: 360px;
-            margin: 100px auto 16px;
-            padding: 32px 24px;
-            border-radius: 3px;
+        body {
+            background-color: rgb(158, 158, 158);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 35vh;
+            line-height: 1.6;
         }
 
-        #message h2 {
-            color: #ffa100;
-            font-weight: bold;
-            font-size: 16px;
-            margin: 0 0 8px;
+        #home {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
 
-        #message h1 {
-            font-size: 22px;
-            font-weight: 300;
-            color: rgba(0, 0, 0, 0.6);
-            margin: 0 0 16px;
+        .button {
+            margin-right: 15px;
+            font-size: larger;
+            width: 20%;
+            height: 9vh;
+            border-radius: 25px;
         }
 
-        #message p {
-            line-height: 140%;
-            margin: 16px 0 24px;
-            font-size: 14px;
+        .tic {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        #message a {
-            display: block;
-            text-align: center;
-            background: #039be5;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: white;
-            padding: 16px;
-            border-radius: 4px;
-        }
-
-        #message,
-        #message a {
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-
-        #load {
-            color: rgba(0, 0, 0, 0.4);
-            text-align: center;
-            font-size: 13px;
-        }
-
-        @media (max-width: 600px) {
-
-            body,
-            #message {
-                margin-top: 0;
-                background: white;
-                box-shadow: none;
-            }
-
-            body {
-                border-top: 16px solid #ffa100;
-            }
+        .intro {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
     </style>
 </head>
 
 <body>
-    <div id="message">
-        <h2>Welcome</h2>
-        <button id='create-room-btn' onclick="createRoom()">Create Room</button>
-        <button id='join-room-btn' onclick="joinRoom()">Join Room</button>
+    <div class="header">
+        <div class="tic">
+            <h1 id="h1">Tic-Tac-Toe</h1>
+        </div class="intro"> 
+        <p class="text">Made with luv by Harshal Rathore Using firebase.</p>
     </div>
 
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <div id="home">
+        <button class="button" type="button" id='create-room-btn' onclick="createRoom()">Create Room</button>
+        <button class="button" type="button" id='join-room-btn' onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <a href="http://localhost:3000/game" style="display: none;" id="changePage"></a>
 
     <script>
-        var host = "http:/localhost:3000/";
         async function CopyRoomKey(roomid) {
             try {
                 await navigator.clipboard.writeText(roomid);
@@ -118,6 +75,7 @@
                 console.error('Failed to copy: ', err);
             }
         }
+
         async function createRoom() {
             var name = prompt("Please Enter your name");
 
@@ -130,15 +88,18 @@
                     body: JSON.stringify({
                         name: name
                     })
-                });
-                const json = await response.json();
-                var board = JSON.stringify(json.board);
+                }).then(async (response)=>{
 
-                localStorage.setItem('name', json.name);
-                localStorage.setItem('roomId', json.roomId);
-                localStorage.setItem('board', board);
-                localStorage.setItem('mark', 'X');
-                CopyRoomKey(json.roomId);
+                    const json = await response.json();
+                    var board = JSON.stringify(json.board);
+    
+                    localStorage.setItem('name', json.name);
+                    localStorage.setItem('roomId', json.roomId);
+                    localStorage.setItem('mark', 'X');
+                    
+                    CopyRoomKey(json.roomId);
+                    document.getElementById('changePage').click();
+                });
             } else {
                 alert('Please enter a name..');
             }
@@ -158,16 +119,17 @@
                         name: name,
                         roomId: roomId
                     })
+                }).then(async (response)=>{
+
+                    const json = await response.json();
+    
+                    localStorage.setItem('name', json.name);
+                    localStorage.setItem('roomId', json.roomId);
+                    localStorage.setItem('mark', 'O');
+
+                    document.getElementById('changePage').click();
                 });
 
-                const json = await response.json();
-                var board = JSON.stringify(json.board);
-
-                localStorage.setItem('name', json.name);
-                localStorage.setItem('roomId', json.roomId);
-                localStorage.setItem('board', board);
-                localStorage.setItem('mark', 'O');
-                localStorage.setItem('user', 'user2');
 
             } else {
                 alert('Room Id or user name invalid..');

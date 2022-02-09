@@ -28,25 +28,25 @@
 
         <br /><br />
         <!-- 3*3 grid of Boxes -->
-        <input type="text" id="b-0-0" onclick="updateTable(0, 0)" readonly />
+        <input type="text" id="b-0-0" onclick="updateTable(0, 0); checkWin()" readonly />
 
-        <input type="text" id="b-0-1" onclick="updateTable(0, 1)" readonly />
+        <input type="text" id="b-0-1" onclick="updateTable(0, 1); checkWin()" readonly />
 
-        <input type="text" id="b-0-2" onclick="updateTable(0, 2)" readonly />
+        <input type="text" id="b-0-2" onclick="updateTable(0, 2); checkWin();" readonly />
         <br /><br />
 
-        <input type="text" id="b-1-0" onclick="updateTable(1, 0)" readonly />
+        <input type="text" id="b-1-0" onclick="updateTable(1, 0); checkWin();" readonly />
 
-        <input type="text" id="b-1-1" onclick="updateTable(1, 1)" readonly />
+        <input type="text" id="b-1-1" onclick="updateTable(1, 1); checkWin();" readonly />
 
-        <input type="text" id="b-1-2" onclick="updateTable(1, 2)" readonly />
+        <input type="text" id="b-1-2" onclick="updateTable(1, 2); checkWin();" readonly />
         <br /><br />
 
-        <input type="text" id="b-2-0" onclick="updateTable(2, 0)" readonly />
+        <input type="text" id="b-2-0" onclick="updateTable(2, 0); checkWin();" readonly />
 
-        <input type="text" id="b-2-1" onclick="updateTable(2, 1)" readonly />
+        <input type="text" id="b-2-1" onclick="updateTable(2, 1); checkWin();" readonly />
 
-        <input type="text" id="b-2-2" onclick="updateTable(2, 2)" readonly />
+        <input type="text" id="b-2-2" onclick="updateTable(2, 2); checkWin();" readonly />
 
         <!-- Grid end here -->
         <br /><br /><br />
@@ -91,8 +91,8 @@
         var boardRef = ref(database, "rooms/" + roomId + "/board");
         onValue(boardRef, (snapshot) => {
             const data = snapshot.val();
-            for (let i = 0; i < board.length; i++) {
-                for (let j = 0; j < board[0].length; j++) {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
                     if (data[i][j]) {
                         document.getElementById(`b-${i}-${j}`).value = data[i][j];
                     }
@@ -110,6 +110,7 @@
         var chance = localStorage.getItem("chance");
         var user_name = localStorage.getItem("name");
         var roomId = localStorage.getItem("roomId");
+        var won = false;
 
         async function updateTable(i, j) {
             const move = await fetch("/know-move", {
@@ -123,7 +124,8 @@
             });
             const moveJson = await move.json();
 
-            if (moveJson.move == user_name) {
+            if ((moveJson.move == user_name) && !won) {
+                
                 var mark = localStorage.getItem("mark");
                 board[i][j] = mark;
                 const response = await fetch("/update-board", {
@@ -151,12 +153,33 @@
                 body: JSON.stringify({
                     roomId: roomId,
                 })
-                
+
             }).then(() => {
-                console.log("board reset");
+                location.reload();
             });
         }
-    </script>
+
+        async function checkWin() {
+            const response = await fetch("/check-win", {
+                method: "POST",
+
+                headers: { "Content-type": "application/json; charset=UTF-8" },
+
+                body: JSON.stringify({
+                    roomId: roomId,
+                })
+
+            }).then(async (response) => {
+                console.log('checking win');
+                const json = await response.json();
+                if(json.won){
+                    won = true;
+                    console.log(`player ${json.mark} won!`);
+                }
+            });
+        }
+
+</script>
 </body>
 
 </html>
