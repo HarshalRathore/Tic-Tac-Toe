@@ -6,7 +6,7 @@ const admin = require('firebase-admin');
 
 const path = require('path');
 
-var serviceAccount = require("D:\\herchel\\herchel-tic-tac-toe\\tic-tac-toe-9fdee-firebase-adminsdk-4tkhc-20776ad637.json");
+var serviceAccount = require("./tic-tac-toe-9fdee-firebase-adminsdk-4tkhc-20776ad637.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
