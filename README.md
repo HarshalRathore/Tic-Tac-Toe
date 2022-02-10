@@ -32,4 +32,4 @@ then go to `localhost:3000`
 
 
 
-Also thanks to my friend [Jatin](https://github.com/jatin-tec) for help in this project.
+Also thanks to my friend [Jatin](https://github.com/jatin-tec) for his help in this project and also to [Hemonsu](https://github.com/himanshutrends) for emotional support.
